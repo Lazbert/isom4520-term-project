@@ -32,6 +32,8 @@ def add_technical_indicators(df, interval=None, **params):
         "ATR": ta.atr(df["High"], df["Low"], df["Close"], length=14),
         "RSI": ta.rsi(df["Close"], length=14),
         "OBV": ta.obv(df["Close"], df["Volume"]),
+        "CMF": ta.cmf(df["High"], df["Low"], df["Close"], df["Volume"], length=20),
+        "CCI": ta.cci(df["High"], df["Low"], df["Close"], length=10),
     }
 
     suffix = "" if interval is None else f"_{interval}"
