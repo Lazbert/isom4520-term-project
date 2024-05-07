@@ -15,14 +15,15 @@ from .reseach_utils import clean_nans
 from .reseach_utils import convert_categorical_to_binary
 
 import logging
+
 logger = logging.getLogger("research_logger")
 
 P_VALUE_THRESHOLD = 0.1
 TEST_SIZE = 0.4
 
-def conduct_univariate_multivariate_hyp_testing(df, **params):
 
-    '''
+def conduct_univariate_multivariate_hyp_testing(df, **params):
+    """
     ## GUIDE: Step 12
 
     This is an example of how we can use the univariate
@@ -36,16 +37,15 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
 
     Returns:
         None
-    '''
+    """
 
     # df = df.copy()
     # df.dropna(inplace=True, axis=0)
     # Split into train and test
     df_train, df_test = train_test_split(df, test_size=TEST_SIZE, random_state=42)
 
-    short_trades = df_train[df_train['trade_direction'] == SHORT]
-    long_trades = df_train[df_train['trade_direction'] == LONG]
-
+    short_trades = df_train[df_train["trade_direction"] == SHORT]
+    long_trades = df_train[df_train["trade_direction"] == LONG]
 
     # Univariate Hypothesis Testing on the long ones
     holder = {}
@@ -54,21 +54,21 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
         if not col.startswith("stat_"):
             continue
 
-        df_tmp = long_trades[[col, 'PnL_ratio']].copy()
+        df_tmp = long_trades[[col, "PnL_ratio"]].copy()
         df_tmp.dropna(inplace=True, axis=0)
 
         X = df_tmp[col]
-        Y = df_tmp['PnL_ratio']
+        Y = df_tmp["PnL_ratio"]
         X = sm.add_constant(X)
 
         model = sm.OLS(Y, X).fit()
         p_value = model.pvalues[col]
         holder[col] = p_value
 
-    print ("\n\np-values of stats for Long Trades")
-    print ("---------------------------------")
-    df = pd.DataFrame.from_dict(holder, orient='index', columns=['p_value'])
-    print (df)
+    print("\n\np-values of stats for Long Trades")
+    print("---------------------------------")
+    df = pd.DataFrame.from_dict(holder, orient="index", columns=["p_value"])
+    print(df)
 
     # Univariate Hypothesis Testing on the short ones
     holder = {}
@@ -77,30 +77,32 @@ def conduct_univariate_multivariate_hyp_testing(df, **params):
         if not col.startswith("stat_"):
             continue
 
-        df_tmp = short_trades[[col, 'PnL_ratio']].copy()
+        df_tmp = short_trades[[col, "PnL_ratio"]].copy()
         df_tmp.dropna(inplace=True, axis=0)
 
         X = df_tmp[col]
-        Y = df_tmp['PnL_ratio']
+        Y = df_tmp["PnL_ratio"]
         X = sm.add_constant(X)
 
         model = sm.OLS(Y, X).fit()
         p_value = model.pvalues[col]
         holder[col] = p_value
 
-    print ("\n\np-values of stats for Short Trades")
-    print ("---------------------------------")
-    df = pd.DataFrame.from_dict(holder, orient='index', columns=['p_value'])
-    print (df)
+    print("\n\np-values of stats for Short Trades")
+    print("---------------------------------")
+    df = pd.DataFrame.from_dict(holder, orient="index", columns=["p_value"])
+    print(df)
 
-    # Regress PnL vs stat_Vola(22)_1d
-    df_tmp = short_trades[['stat_Vola(22)_1d', 'PnL_ratio']].copy()
+    # Multivariate Hypothesis Testing
+    df_tmp = long_trades[
+        ["stat_Vola(22)_1d", "stat_beta_22_1d", "stat_beta_66_1d", "PnL_ratio"]
+    ].copy()
     df_tmp.dropna(inplace=True, axis=0)
-    X = df_tmp[col]
-    Y = df_tmp['PnL_ratio']
+    X = df_tmp[["stat_Vola(22)_1d", "stat_beta_22_1d", "stat_beta_66_1d"]]
+    Y = df_tmp["PnL_ratio"]
     X = sm.add_constant(X)
 
     model = sm.OLS(Y, X).fit()
-    print (model.summary())
+    print(model.summary())
 
     return

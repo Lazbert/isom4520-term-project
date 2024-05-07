@@ -1,10 +1,10 @@
 def get_params(
-    years_to_consider=5,
-    n_symbols=50,
+    years_to_consider=3,
+    n_symbols=20,
     market="ETF",  # US
     slippage_rate=0.00025,
     # Strategy params
-    strategy_name="MA5_cross_MA50",  # random, buy_and_hold
+    strategy_name="rsi",  # refer to get_alpha_signal_func.py
     # STOP LOSS
     stop_loss_percentage=3,
     risk_level_percentage=0.5,
