@@ -4,7 +4,7 @@ def get_params(
     market="ETF",  # US
     slippage_rate=0.00025,
     # Strategy params
-    strategy_name="rsi",  # refer to get_alpha_signal_func.py
+    strategy_name="rsi_MA_cross",  # refer to get_alpha_signal_func.py
     # STOP LOSS
     stop_loss_percentage=3,
     risk_level_percentage=0.5,

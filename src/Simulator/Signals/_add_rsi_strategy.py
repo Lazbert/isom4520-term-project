@@ -1,8 +1,9 @@
 import numpy as np
 import pandas_ta as ta
+from pandas import DataFrame
 
 
-def add_rsi_strategy(df_in, **params):
+def add_rsi_strategy(df_in, **params) -> DataFrame:
     OVERBOUGHT_THRES = 80
     OVERSOLD_THRES = 20
 
