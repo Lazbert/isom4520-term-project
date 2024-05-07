@@ -1,9 +1,9 @@
 import pandas as pd
 import pandas_ta as ta
 
-def add_technical_indicators(df, interval = None, **params):
 
-    '''
+def add_technical_indicators(df, interval=None, **params):
+    """
     ## GUIDE: Step 4
 
     This function adds technical indicators to the data.
@@ -23,26 +23,31 @@ def add_technical_indicators(df, interval = None, **params):
 
     Returns:
         df: pd.DataFrame
-    
-    '''
+
+    """
 
     ## TODO: ASSIGNMENT #3: Add some technical indicators here
 
     technical_indicators = {
-        'ATR': 14,
+        "ATR": ta.atr(df["High"], df["Low"], df["Close"], length=14),
+        "RSI": ta.rsi(df["Close"], length=14),
+        "OBV": ta.obv(df["Close"], df["Volume"]),
     }
 
     suffix = "" if interval is None else f"_{interval}"
 
     initial_columns = list(df.columns)
 
-    for indicator, period in technical_indicators.items():
+    for indicator, series in technical_indicators.items():
+        if f"stat_{indicator}{suffix}" in df.columns:
+            continue
+        df[f"stat_{indicator}{suffix}"] = series.shift()
 
-        if indicator == 'ATR':
-            if f'stat_ATR{suffix}' in df.columns:
-                continue
-            atr = ta.atr(df['High'], df['Low'], df['Close'], length=period)
-            df[f'stat_ATR{suffix}'] = atr.shift()
+        # if indicator == "ATR":
+        #     if f"stat_ATR{suffix}" in df.columns:
+        #         continue
+        #     atr = ta.atr(df["High"], df["Low"], df["Close"], length=period)
+        #     df[f"stat_ATR{suffix}"] = atr.shift()
 
     """
     PerformanceWarning: DataFrame is highly fragmented. 

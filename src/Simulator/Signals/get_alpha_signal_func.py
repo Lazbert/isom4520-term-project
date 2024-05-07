@@ -1,6 +1,6 @@
 from ._add_MA5_crosses_MA50_signal import add_MA5_crosses_MA50_signal
 from ._add_rsi_strategy import add_rsi_strategy
-from ._add_rsi_MA_cross_strategy import add_rsi_MA_cross_strategy
+from ._add_obv_strategy import add_obv_strategy
 from pandas import DataFrame
 from typing import Callable
 import numpy as np
@@ -12,7 +12,7 @@ def get_alpha_signal_func(**params):
     strategy_signal_func_dict: dict[str, Callable[..., DataFrame]] = {
         "MA5_cross_MA50": add_MA5_crosses_MA50_signal,
         "rsi": add_rsi_strategy,
-        "rsi_MA_cross": add_rsi_MA_cross_strategy,
+        "obv": add_obv_strategy,
     }
 
     signal_func = strategy_signal_func_dict.get(strategy_name)

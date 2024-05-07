@@ -4,13 +4,12 @@ from pandas import DataFrame
 
 
 def add_rsi_strategy(df_in, **params) -> DataFrame:
-    OVERBOUGHT_THRES = 80
-    OVERSOLD_THRES = 20
+    OVERBOUGHT_THRES = 70
+    OVERSOLD_THRES = 30
 
     df = df_in.copy()
 
-    df["rsi"] = ta.rsi(df["Close"], length=14)  # the ta library handles shift within
-
+    df["rsi"] = ta.rsi(df["Close"], length=14)
     df["trade_opening_price"] = df["Open"]
 
     df["signal"] = 0
@@ -24,6 +23,5 @@ def add_rsi_strategy(df_in, **params) -> DataFrame:
     df.loc[long_mask, "signal"] = 1
     df.loc[short_mask, "signal"] = -1
 
-    df["signal"] = df["signal"].shift(1)
-
+    df["signal"] = df["signal"].shift()
     return df
