@@ -5,13 +5,9 @@ import statsmodels.api as sm
 from ._add_arima_forecasting import _add_arima_forecasting
 from ._add_garch_forecasting import _add_garch_forecasting
 
-def add_statistical_measures(
-        df,
-        macro_and_other_data = None,
-        interval = None,
-        **params):
-    
-    '''
+
+def add_statistical_measures(df, macro_and_other_data=None, interval=None, **params):
+    """
     ## GUIDE: Step 3
 
     Add statistical measures to the data
@@ -35,10 +31,10 @@ def add_statistical_measures(
 
         interval: str
             The interval of the data
-    
+
     Returns:
         df: pd.DataFrame
-    '''
+    """
 
     ## TODO: ASSIGNMENT #2: Add Beta and IV here
 
@@ -49,41 +45,54 @@ def add_statistical_measures(
 
     for t in [22]:
         if f"stat_Vola({t}){suffix}" not in df:
-            df[f"stat_Vola({t}){suffix}"] = df['Close'].shift().pct_change().rolling(window=t).std()*(252**0.5)
+            df[f"stat_Vola({t}){suffix}"] = df["Close"].shift().pct_change().rolling(
+                window=t
+            ).std() * (252**0.5)
 
     if macro_and_other_data is not None:
         # For adding the data related to the macro and market index
-        
         for k, data in macro_and_other_data.items():
-            if k in ['data', 'symbol', 'cache_dir']:
+            if k in ["data", "symbol", "cache_dir"]:
                 continue
-            
-            if f'stat_{k}_change(t_1)_ratio{suffix}' not in df:
-                df[f'stat_{k}_change(t_1)_ratio{suffix}'] = data['Close'].pct_change().shift()
+
+            if f"stat_{k}_change(t_1)_ratio{suffix}" not in df:
+                df[f"stat_{k}_change(t_1)_ratio{suffix}"] = (
+                    data["Close"].pct_change().shift()
+                )
 
         for w in [22, 66]:
-            if macro_and_other_data.get('market_index') is None:
+            if macro_and_other_data.get("market_index") is None:
                 continue
 
             try:
-                if f'stat_beta_{w}{suffix}' not in df:
-                    merged_df = pd.merge(df['Close'], macro_and_other_data['market_index']['Close'], left_index=True, right_index=True, suffixes=('', '_market'))
-                    merged_df['Close_return'] = merged_df['Close'].pct_change()
-                    merged_df['Close_market_return'] = merged_df['Close_market'].pct_change()
+                if f"stat_beta_{w}{suffix}" not in df:
+                    merged_df = pd.merge(
+                        df["Close"],
+                        macro_and_other_data["market_index"]["Close"],
+                        left_index=True,
+                        right_index=True,
+                        suffixes=("", "_market"),
+                    )
+                    merged_df["Close_return"] = merged_df["Close"].pct_change()
+                    merged_df["Close_market_return"] = merged_df[
+                        "Close_market"
+                    ].pct_change()
                     merged_df = merged_df.dropna()
 
-                    betas = [np.nan for i in range(w-1)]
-                    idio_vols = [np.nan for i in range(w-1)]
+                    betas = [np.nan for i in range(w - 1)]
+                    idio_vols = [np.nan for i in range(w - 1)]
                     for i in range(len(merged_df) - w + 1):
-                        window_data = merged_df.iloc[i:i+w]
-                        beta, idio_vol = calculate_beta(window_data['Close_return'], window_data['Close_market_return'])
+                        window_data = merged_df.iloc[i : i + w]
+                        beta, idio_vol = calculate_beta(
+                            window_data["Close_return"],
+                            window_data["Close_market_return"],
+                        )
                         betas.append(beta)
                         idio_vols.append(idio_vol)
 
-
                     betas = pd.Series(betas, index=merged_df.index)
                     betas = betas.shift()
-                    betas.name = f'stat_beta_{w}{suffix}'
+                    betas.name = f"stat_beta_{w}{suffix}"
 
                     idio_vols = pd.Series(idio_vols, index=merged_df.index)
                     idio_vols = idio_vols.shift()
@@ -94,12 +103,11 @@ def add_statistical_measures(
                     df = df.join(idio_vols)
 
             except Exception as e:
-                df[f'stat_beta_{w}{suffix}'] = np.nan
+                df[f"stat_beta_{w}{suffix}"] = np.nan
                 df[f"stat_IV_based_on_daily_return_market_{w}{suffix}"] = np.nan
 
     if len(df) == 0:
         return df.copy(), False
-
 
     df = _add_arima_forecasting(df, interval, **params)
     df = _add_garch_forecasting(df, interval, **params)

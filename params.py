@@ -1,7 +1,7 @@
 def get_params(
-    years_to_consider=3,
-    n_symbols=20,
-    market="US",
+    years_to_consider=5,
+    n_symbols=50,
+    market="ETF",  # US
     slippage_rate=0.00025,
     # Strategy params
     strategy_name="MA5_cross_MA50",  # random, buy_and_hold
@@ -27,6 +27,8 @@ def get_params(
     should_load_from_cache=True,
     draw_stat_figures=True,
     should_log=True,
+    # term project params
+    use_ETF=True,
 ):
     """
     Params:
