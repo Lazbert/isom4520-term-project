@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import logging
 import scipy.stats as stats
+import statsmodels.api as sm
+import numpy as np
 
 import matplotlib.pyplot as plt
 
@@ -18,18 +20,15 @@ simulation_logger = logging.getLogger("simulation_logger")
 
 
 def generate_report_for_trades_history(
-        trades_df,
-        daily_budget_dfs,
-        stock_histories,
-        **params):
-    
-    '''
+    trades_df, daily_budget_dfs, stock_histories, **params
+):
+    """
     ## GUIDE: Step 9
 
     Generate the report for the trades history
 
     This function generates the report for the trades history.
-    
+
 
     Args:
         trades_df: pd.DataFrame
@@ -46,15 +45,16 @@ def generate_report_for_trades_history(
 
     Returns:
         summaries_df: pd.DataFrame
-    '''
+    """
 
-    
-    enums = params['enums']
+    enums = params["enums"]
     # Converting to datetime
     df = trades_df
     df_g = daily_budget_dfs
 
-    df_g['net_exposure'] = get_net_exposure(df_g['long_positions_values'], df_g['short_positions_values'])
+    df_g["net_exposure"] = get_net_exposure(
+        df_g["long_positions_values"], df_g["short_positions_values"]
+    )
 
     should_log = params.get("should_log")
 
@@ -70,15 +70,22 @@ def generate_report_for_trades_history(
 
         try:
             df_g = pd.merge(
-                df_g, stock_histories.market_index['Close'],
-                left_index=True, right_index=True, how='left'
-                )
-            df_g.rename(
-                columns = {'Close': 'MarketIndexClose'},
-                inplace = True
-                )
+                df_g,
+                stock_histories.market_index["Close"],
+                left_index=True,
+                right_index=True,
+                how="left",
+            )
+            df_g.rename(columns={"Close": "MarketIndexClose"}, inplace=True)
+
+            # calculate portfolio beta
+            beta = calculate_portfolio_beta(
+                df_g["PortfolioValue"], df_g["MarketIndexClose"]
+            )
+            df_g["PortfolioBeta"] = beta
+
         except Exception as e:
-            pass
+            print(f"Error in calculating the portfolio beta: {e}")
 
         df_g.to_csv(os.path.join(enums.TRADE_REPORTS_DIR, "DailyBudget.csv"))
 
@@ -88,10 +95,10 @@ def generate_report_for_trades_history(
     if should_log:
         summaries_df.to_csv("reports/Summary.csv")
         simulation_logger.info(
-            "\n----------------------------------------------------------\n" + \
-            summaries_df.to_string() + \
             "\n----------------------------------------------------------\n"
-            )
+            + summaries_df.to_string()
+            + "\n----------------------------------------------------------\n"
+        )
 
     if should_log:
         draw_trades_executions(stock_histories, **params)
@@ -104,28 +111,31 @@ def generate_report_for_trades_history(
 
     return summaries_df
 
+
 def _generate_report_for_symbols(df, TRADE_REPORTS_DIR, **params):
 
     holder = []
-    for symbol in set(df['symbol'].values):
+    for symbol in set(df["symbol"].values):
 
-        df_tmp = df[df['symbol'] == symbol]
+        df_tmp = df[df["symbol"] == symbol]
 
-        df_tmp_long = df_tmp[df_tmp['trade_direction'] == LONG]
-        df_tmp_short = df_tmp[df_tmp['trade_direction'] == SHORT]
-        holder.append({
+        df_tmp_long = df_tmp[df_tmp["trade_direction"] == LONG]
+        df_tmp_short = df_tmp[df_tmp["trade_direction"] == SHORT]
+        holder.append(
+            {
                 "Symbol": symbol,
                 "Count": len(df_tmp),
                 "Count_Long": len(df_tmp_long),
                 "Count_Short": len(df_tmp_short),
-                "win": df_tmp['is_successful'].mean(),
-                "win_long": df_tmp_long['is_successful'].mean(),
-                "win_short": df_tmp_short['is_successful'].mean(),
-                "PnL_ratio_mean": df_tmp['PnL_ratio'].mean(),
-                "PnL_ratio_long_mean": df_tmp_long['PnL_ratio'].mean(),
-                "PnL_ratio_short_mean": df_tmp_short['PnL_ratio'].mean(),
-            })
-        
+                "win": df_tmp["is_successful"].mean(),
+                "win_long": df_tmp_long["is_successful"].mean(),
+                "win_short": df_tmp_short["is_successful"].mean(),
+                "PnL_ratio_mean": df_tmp["PnL_ratio"].mean(),
+                "PnL_ratio_long_mean": df_tmp_long["PnL_ratio"].mean(),
+                "PnL_ratio_short_mean": df_tmp_short["PnL_ratio"].mean(),
+            }
+        )
+
     df_to_save = pd.DataFrame(holder)
     df_to_save.to_csv(os.path.join(TRADE_REPORTS_DIR, "SummaryOfExecutedTradesIn.csv"))
 
@@ -134,28 +144,39 @@ def _generate_report_for_symbols(df, TRADE_REPORTS_DIR, **params):
 
 def plot_histogram_of_daily_return(df_g, **params):
 
-    enums = params['enums']
+    enums = params["enums"]
 
-    returns = df_g['PortfolioValue'].pct_change() * 100
+    returns = df_g["PortfolioValue"].pct_change() * 100
 
     plt.hist(returns, bins=50)
-    plt.title('Histogram of Daily Returns')
-    plt.xlabel('Return (%)')
-    plt.ylabel('Frequency')
+    plt.title("Histogram of Daily Returns")
+    plt.xlabel("Return (%)")
+    plt.ylabel("Frequency")
 
     plt.savefig(os.path.join(enums.STAT_FIGURES_DIR, "HistogramOfDailyReturns.png"))
 
 
 def plot_daily_returns_QQ_plot(df_g, **params):
 
-    enums = params['enums']
+    enums = params["enums"]
 
-    returns = df_g['PortfolioValue'].pct_change() * 100
+    returns = df_g["PortfolioValue"].pct_change() * 100
 
     fig = plt.figure()
     res = stats.probplot(returns, dist="norm", plot=plt)
-    plt.title('Normal Q-Q Plot')
-    plt.xlabel('Theoretical Quantiles')
-    plt.ylabel('Sample Quantiles')
+    plt.title("Normal Q-Q Plot")
+    plt.xlabel("Theoretical Quantiles")
+    plt.ylabel("Sample Quantiles")
 
     plt.savefig(os.path.join(enums.STAT_FIGURES_DIR, "QQPlotOfDailyReturns.png"))
+
+
+def calculate_portfolio_beta(
+    portfolio_value: pd.Series, market_index_close: pd.Series
+) -> np.float64:
+    portfolio_value_returns = portfolio_value.pct_change().dropna()
+    market_returns = market_index_close.pct_change().dropna()
+    model = sm.OLS(portfolio_value_returns, sm.add_constant(market_returns))
+    results = model.fit()
+    beta = results.params.values[1]
+    return beta

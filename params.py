@@ -1,16 +1,16 @@
 def get_params(
-    years_to_consider=3,
+    years_to_consider=5,
     n_symbols=15,
     market="ETF",  # US
     slippage_rate=0.00025,
     # Strategy params
-    strategy_name="obv",  # refer to get_alpha_signal_func.py
+    strategy_name="rsi_with_cmf",  # refer to get_alpha_signal_func.py
     # STOP LOSS
-    stop_loss_percentage=5,  # 3
-    risk_level_percentage=0.5,
+    stop_loss_percentage=4,  # 3
+    risk_level_percentage=0.4,
     should_stop_loss=True,
     # TAKE PROFIT
-    take_profit_percentage=10,  # 3
+    take_profit_percentage=16,  # 3
     should_take_profit=True,
     # Intraday trading params
     should_close_at_end_of_candle=False,
