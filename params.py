@@ -4,7 +4,7 @@ def get_params(
     market="ETF",  # US
     slippage_rate=0.00025,
     # Strategy params
-    strategy_name="obv",  # refer to get_alpha_signal_func.py
+    strategy_name="rsi_with_cmf",  # refer to get_alpha_signal_func.py
     # STOP LOSS
     stop_loss_percentage=10,  # 3
     risk_level_percentage=0.5,
@@ -27,8 +27,6 @@ def get_params(
     should_load_from_cache=True,
     draw_stat_figures=True,
     should_log=True,
-    # term project params
-    use_ETF=True,
 ):
     """
     Params:
