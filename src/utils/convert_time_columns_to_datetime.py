@@ -13,7 +13,11 @@ def convert_time_columns_to_datetime(df, market):
 
         df[col] = pd.to_datetime(df[col], utc=True)
         before_correction = df[col].copy()
-        if market.startswith("US") or market.startswith("ETF"):
+        if (
+            market.startswith("US")
+            or market.startswith("US-TERM")
+            or market.startswith("ETF")
+        ):
             df[col] = df[col].dt.tz_convert("US/Eastern")
         elif market == "HK":
             df[col] = df[col].dt.tz_convert("Asia/Hong_Kong")

@@ -582,6 +582,7 @@ class SimulationResultsHolder:
 
         if (
             self.market.startswith("US")
+            or self.market.startswith("US-TERM")
             or self.market.startswith("HK")
             or self.market.startswith("ETF")
         ):

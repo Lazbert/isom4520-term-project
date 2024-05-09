@@ -15,9 +15,14 @@ def optimize(**params):
     trading_params_ranges = {
         "stop_loss_percentage": [i for i in range(1, 21)],
         "risk_level_percentage": [0.1, 0.2, 0.3, 0.4, 0.5],
-        "should_stop_loss": [True],  # , False],
+        "should_stop_loss": [True, False],
         "take_profit_percentage": [i for i in range(1, 21)],
-        "should_take_profit": [True],  # , False],
+        "should_take_profit": [True, False],
+        # "rsi_length": [i for i in range(10, 21)],
+        # "rsi_overbought_thres": [i for i in range(70, 81)],
+        # "rsi_oversold_thres": [i for i in range(20, 31)],
+        # "cmf_bullish_thres": [i / 100 for i in range(1, 11)],
+        # "cmf_bearish_thres": [i / 100 for i in range(-1, -11, -1)],
     }
 
     opt_method = params.get("opt_method", "grid_search")

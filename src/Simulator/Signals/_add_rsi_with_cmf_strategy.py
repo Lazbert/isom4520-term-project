@@ -3,10 +3,10 @@ from pandas import DataFrame
 
 
 def add_rsi_with_cmf_strategy(df_in: DataFrame, **params) -> DataFrame:
-    OVERBOUGHT_THRES = 70
-    OVERSOLD_THRES = 30
-    CMF_BULLISH = 0.05
-    CMF_BEARISH = -0.05
+    OVERBOUGHT_THRES = params.get("rsi_overbought_thres", 70)  # 70
+    OVERSOLD_THRES = params.get("rsi_oversold_thres", 30)  # 30
+    CMF_BULLISH = params.get("cmf_bullish_thres", 0.05)  # 0.05
+    CMF_BEARISH = params.get("cmf_bearish_thres", -0.05)  # -0.05
 
     df = df_in.copy()
 

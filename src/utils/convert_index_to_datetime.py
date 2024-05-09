@@ -31,7 +31,11 @@ def convert_index_to_datetime(df, market, trading_interval=None):
 
     df.index = pd.to_datetime(df.index, utc=True)
     before_correction = df.index.copy()
-    if market.startswith("US") or market.startswith("ETF"):
+    if (
+        market.startswith("US")
+        or market.startswith("US-TERM")
+        or market.startswith("ETF")
+    ):
         df.index = df.index.tz_convert("US/Eastern")
 
         if trading_interval in ["1d", "1 day"]:

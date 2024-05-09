@@ -52,7 +52,7 @@ class AllStocksPrices:
         params_to_pass = deepcopy(self.__dict__)
         params_to_pass.update(trading_interval="1d")
 
-        if market.startswith("US"):
+        if market.startswith("US") or market.startswith("US-TERM"):
             # Load the market index
             self.market_index = load_data_from_yahoo_finance(
                 "^GSPC", market_macro_index=True, **params_to_pass

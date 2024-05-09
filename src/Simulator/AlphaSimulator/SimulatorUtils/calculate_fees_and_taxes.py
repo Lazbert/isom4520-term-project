@@ -8,7 +8,11 @@ def calculate_fees_and_taxes(invested_budget, capital_gain, num_shares, **params
     should_warn = params.get("should_log")
     market = params["market"]
 
-    if market.startswith("US") or market.startswith("ETF"):
+    if (
+        market.startswith("US")
+        or market.startswith("US-TERM")
+        or market.startswith("ETF")
+    ):
         # fees += calculate_robinhood_fee(invested_budget, num_shares)
         fees += min(max(0.005 * num_shares, 1), 0.01 * invested_budget)  # IBKR
 
