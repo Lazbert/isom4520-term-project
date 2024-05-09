@@ -4,13 +4,13 @@ def get_params(
     market="US-TERM",  # US
     slippage_rate=0.00025,
     # Strategy params
-    strategy_name="cci",  # refer to get_alpha_signal_func.py
+    strategy_name="rsi_with_cmf",  # refer to get_alpha_signal_func.py
     # STOP LOSS
-    stop_loss_percentage=15,  # 15
-    risk_level_percentage=0.3,  # 0.3
+    stop_loss_percentage=5,  # 15
+    risk_level_percentage=0.2,  # 0.3
     should_stop_loss=True,
     # TAKE PROFIT
-    take_profit_percentage=17,  # 17
+    take_profit_percentage=5,  # 17
     should_take_profit=True,
     # Intraday trading params
     should_close_at_end_of_candle=False,

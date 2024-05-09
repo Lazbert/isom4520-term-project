@@ -1,4 +1,5 @@
 import pandas as pd
+import pandas_ta as ta
 import numpy as np
 import statsmodels.api as sm
 
@@ -42,6 +43,13 @@ def add_statistical_measures(df, macro_and_other_data=None, interval=None, **par
     is_updated = False
     suffix = "" if interval is None else f"_{interval}"
     initial_length_of_columns = len(df.columns)
+
+    ma_20 = ta.sma(df["Close"], length=20)
+    for t in [5, 10, 20]:
+        df[f"stat_MA{t}_over_close"] = ta.sma(df["Close"], length=t) / df["Close"]
+
+        if t != 20 and f"stat_MA{t}_over_MA20" not in df:
+            df[f"stat_MA{t}_over_MA20"] = ta.sma(df["Close"], length=t) / ma_20
 
     for t in [5, 10, 22]:
         if f"stat_Vola({t}){suffix}" not in df:
