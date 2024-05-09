@@ -34,7 +34,7 @@ def run(run_mode="simulate"):
         analyze_raw_data("1d", enums=enums, **params)
 
     elif run_mode == "optimize":
-        optimize(opt_method="genetic_algorithm", enums=enums, **params)
+        optimize(opt_method="grid_search", enums=enums, **params)
 
 
 if __name__ == "__main__":
@@ -43,8 +43,8 @@ if __name__ == "__main__":
 
     ## GUIDE: Step 1
 
-    run(run_mode="analyze_raw_data")
-    # run(run_mode="simulate")
+    # run(run_mode="analyze_raw_data")
+    run(run_mode="simulate")
     # run(run_mode="research")
     # run(run_mode="optimize")
 

@@ -13,11 +13,11 @@ def optimize(**params):
     enums = params["enums"]
 
     trading_params_ranges = {
-        "stop_loss_percentage": [i for i in range(1, 21)],
-        "risk_level_percentage": [0.1, 0.2, 0.3, 0.4, 0.5],
-        "should_stop_loss": [True, False],
-        "take_profit_percentage": [i for i in range(1, 21)],
-        "should_take_profit": [True, False],
+        "stop_loss_percentage": [i for i in range(5, 21)],
+        "risk_level_percentage": [0.2, 0.3, 0.4, 0.5],
+        "should_stop_loss": [True],  # , False],
+        "take_profit_percentage": [i for i in range(5, 21)],
+        "should_take_profit": [True],  # , False],
         # "rsi_length": [i for i in range(10, 21)],
         # "rsi_overbought_thres": [i for i in range(70, 81)],
         # "rsi_oversold_thres": [i for i in range(20, 31)],

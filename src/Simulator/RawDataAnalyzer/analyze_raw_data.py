@@ -95,9 +95,13 @@ def _plot_heatmap(data, base_direc, **params):
     df = pd.concat(holder, axis=1)
     df.columns = data.keys()
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(15, 10))
     cmap = sns.diverging_palette(10, 120, as_cmap=True)
-    sns.heatmap(df.corr(), cmap=cmap)
+    sns.heatmap(df.corr(), annot=True, cmap=cmap)
+
+    print("============= Correlation of Close ==============")
+    print(df.corr())
+    print("=================================================\n\n")
 
     df.to_csv(os.path.join(base_direc, "CorrelationOfClose.csv"))
     plt.title("Correlation of Close Prices")
@@ -112,7 +116,11 @@ def _plot_heatmap(data, base_direc, **params):
     df = pd.concat(holder, axis=1)
     df.columns = data.keys()
     cmap = sns.diverging_palette(10, 120, as_cmap=True)
-    sns.heatmap(df.corr(), cmap=cmap)
+    sns.heatmap(df.corr(), annot=True, cmap=cmap)
+
+    print("============= Correlation of Returns ==============")
+    print(df.corr())
+    print("=================================================")
 
     df.to_csv(os.path.join(base_direc, "CorrelationOfReturns.csv"))
     plt.title("Correlation of Returns")

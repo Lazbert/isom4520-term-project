@@ -34,6 +34,10 @@ def add_technical_indicators(df, interval=None, **params):
         "OBV": ta.obv(df["Close"], df["Volume"]),
         "CMF": ta.cmf(df["High"], df["Low"], df["Close"], df["Volume"], length=20),
         "CCI": ta.cci(df["High"], df["Low"], df["Close"], length=10),
+        "MACD": ta.macd(df["Close"], fast=12, slow=26, signal=9)["MACDh_12_26_9"],
+        "MA5": ta.sma(df["Close"], length=5),
+        "MA10": ta.sma(df["Close"], length=10),
+        "MA20": ta.sma(df["Close"], length=20),
     }
 
     suffix = "" if interval is None else f"_{interval}"
@@ -41,9 +45,9 @@ def add_technical_indicators(df, interval=None, **params):
     initial_columns = list(df.columns)
 
     for indicator, series in technical_indicators.items():
-        if f"stat_{indicator}{suffix}" in df.columns:
+        if f"stat_{indicator}" in df.columns:
             continue
-        df[f"stat_{indicator}{suffix}"] = series.shift()
+        df[f"stat_{indicator}"] = series.shift()
 
         # if indicator == "ATR":
         #     if f"stat_ATR{suffix}" in df.columns:

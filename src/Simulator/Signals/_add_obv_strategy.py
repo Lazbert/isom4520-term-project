@@ -5,7 +5,7 @@ import pandas_ta as ta
 # https://medium.com/@mail.remotetrades/trading-strategy-obv-divergence-trade-6ba567a636a5
 def add_obv_strategy(df_in: DataFrame, **params):
     """OBV divergence strategy with lookback period of 10 days"""
-    ATR_MULTIPLIER = 2
+    ATR_MULTIPLIER = 4
 
     df = df_in.copy()
     df["trade_opening_price"] = df["Open"]
