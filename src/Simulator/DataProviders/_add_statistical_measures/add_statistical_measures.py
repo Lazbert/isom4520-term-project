@@ -43,7 +43,7 @@ def add_statistical_measures(df, macro_and_other_data=None, interval=None, **par
     suffix = "" if interval is None else f"_{interval}"
     initial_length_of_columns = len(df.columns)
 
-    for t in [22]:
+    for t in [5, 10, 22]:
         if f"stat_Vola({t}){suffix}" not in df:
             df[f"stat_Vola({t}){suffix}"] = df["Close"].shift().pct_change().rolling(
                 window=t
